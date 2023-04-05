@@ -15,14 +15,16 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-gnutls-dev libhts-dev libboost-date-time-dev libboost-program-options-dev libboost-system-dev libboost-filesystem-dev libboost-iostreams-dev
-      - uses: jtdor/build-deb-action@v1
+      - uses: jiro4989/build-deb-action@v2
         id: build-deb
-        env:
-          DEB_BUILD_OPTIONS: noautodbgsym
         with:
-          buildpackage-opts: --build=binary --no-sign
-          host-arch: arm64
+          package: tracy
           package_root: .debpkg
+          maintainer: your_name
+          version: ${{ github.ref }} # refs/tags/v*.*.*
+          arch: 'arm64'
+          depends: 'libc6 (>= 2.2.1), libcurl4-gnutls, libhts-dev, libboost-date-time-dev, libboost-program-options-dev, libboost-system-dev, libboost-filesystem-dev, libboost-iostreams-dev'
+          desc: 'this is sample package.'
       - name: Upload deb to release
         uses: softprops/action-gh-release@v1
         if: steps.build-deb.outputs.status == 'success' && !cancelled()
