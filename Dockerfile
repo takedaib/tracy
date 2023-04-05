@@ -31,9 +31,13 @@ RUN apt-get update && apt-get install -y \
 ENV BOOST_ROOT /usr
 
 # install tracy
-RUN cd /opt \
-    && git clone --recursive https://github.com/gear-genomics/tracy.git \
-    && cd /opt/tracy/ \
+WORKDIR /opt/tracy/
+ADD ./.git/ /opt/tracy/.git/
+ADD ./src/ /opt/tracy/src/
+COPY .gitmodules Makefile /opt/tracy/
+RUN ls -la /opt/tracy/*
+RUN ls -la /opt/tracy/src/
+RUN git submodule update --init --recursive \
     && make STATIC=1 all \
     && make install
 
