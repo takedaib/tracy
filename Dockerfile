@@ -41,17 +41,5 @@ RUN git submodule update --init --recursive \
     && make STATIC=1 all \
     && make install
 
-# Multi-stage build
-FROM alpine:latest
-RUN mkdir -p /opt/tracy/bin
-WORKDIR /opt/tracy/bin
-COPY --from=0 /opt/tracy/bin/tracy .
-
-# Workdir
-WORKDIR /root/
-
-# Add Tracy to PATH
-ENV PATH="/opt/tracy/bin:${PATH}"
-
 # by default /bin/sh is executed
 CMD ["/bin/sh"]

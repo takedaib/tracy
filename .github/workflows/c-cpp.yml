@@ -15,12 +15,15 @@ jobs:
           - name: amd64
             arch: amd64
             platform: linux/amd64
-#          - name: arm64
-#            arch: arm64
-#            platform: linux/arm64
-#          - name: armhf
-#            arch: armhf
-#            platform: linux/arm/v7
+          - name: arm64
+            arch: arm64
+            platform: linux/arm64
+          - name: arm32
+            arch: arm32
+            platform: linux/arm/v7
+          - name: riscv64
+            arch: riscv64
+            platform: linux/riscv64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -53,7 +56,7 @@ jobs:
         if: steps.extract.outputs.status == 'success' && !cancelled()
         with:
           # Artifact name
-          name: tracy-binaries
+          name: tracy-${{ matrix.arch }}
           # A file, directory or wildcard pattern that describes what to upload
           path: ./tracy-${{ matrix.arch }}
           if-no-files-found: error
@@ -72,55 +75,3 @@ jobs:
           files: tracy-${{ matrix.arch }}
           draft: true
           tag_name: ${{ steps.tag.outputs.release_tag }}
-
-
-#      - name: Upload Release Asset
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.github_token }}
-#        with:
-#          upload_url: ${{ steps.update_release.outputs.upload_url }}
-#          asset_path: ./tracy-${{ matrix.arch }}
-#          asset_name: tracy-${{ matrix.arch }}
-#          asset_content_type: 'application/octet-stream'
-
-#      - name: Update release
-#        uses: johnwbyrd/update-release@master
-#        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          files: tracy-${{ matrix.arch }}
-
-#
-#      - name: Install deps
-#        run: |
-#          sudo apt-get update
-#          sudo apt-get install -y libcurl4-gnutls-dev libhts-dev libboost-date-time-dev libboost-program-options-dev libboost-system-dev libboost-filesystem-dev libboost-iostreams-dev
-#
-#      - name: Build using make
-#        env:
-#          CFLAGS: -Werror
-#          CXXFLAGS: -Werror
-#        run: |
-#          make STATIC=1 all
-#          make install
-#
-#      - uses: jiro4989/build-deb-action@v2
-#        id: build-deb
-#        with:
-#          package: tracy
-#          package_root: .debpkg
-#          maintainer: your_name
-#          version: ${{ github.ref }} # refs/tags/v*.*.*
-#          arch: 'arm64'
-#          depends: 'libc6 (>= 2.2.1), libcurl4-gnutls, libhts-dev, libboost-date-time-dev, libboost-program-options-dev, libboost-system-dev, libboost-filesystem-dev, libboost-iostreams-dev'
-#          desc: 'this is sample package.'
-#      - name: Upload deb to release
-#        uses: softprops/action-gh-release@v1
-#        if: steps.build-deb.outputs.status == 'success' && !cancelled()
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: ${{ steps.build-deb.outputs.release_tag }}
-#          body: 'Release ${{ steps.build-deb.outputs.release_tag }}'
-#          files: .debpkg/*.deb
-#          prerelease: true
